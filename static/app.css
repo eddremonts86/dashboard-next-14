@@ -42,6 +42,13 @@ img {
 .da-page-section-img {
   width: 300px;
   margin: 20px;
+  aspect-ratio: auto 3/4;
+  object-fit: cover;
+}
+
+.da-page-img-shadow {
+  background: linear-gradient(145deg, #e6e6e6, #ffffff);
+  box-shadow: 7px 7px 10px #ebebeb, -7px -7px 10px #ffffff;
 }
 
 .da-page-section.inverted {
@@ -71,10 +78,10 @@ img {
 }
 .da-page-section-partners-img > img {
   margin: 1em;
-  background: #fff;
   border-radius: 5px;
   padding: 15px;
-  box-shadow: 0px 0px 10px 0px #f9f9f9;
+  background: linear-gradient(145deg, #e6e6e6, #ffffff);
+  box-shadow: 7px 7px 10px #ebebeb, -7px -7px 10px #ffffff;
 }
 
 @media screen and (max-width: 768px) {
