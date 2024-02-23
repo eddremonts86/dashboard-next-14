@@ -1,5 +1,5 @@
 body {
-  background-color: #eee;
+  background-color: #f7f7f763;
 }
 body * {
   font-family: -apple-system, Helvetica Neue, sans-serif;
@@ -14,9 +14,9 @@ img {
 
 .da-page-header,
 .da-page-main {
-  width: 740px;
+  width: 860px;
   background-color: #fff;
-  padding: 20px;
+  padding: 0 20px 0;
   overflow: hidden;
   margin: auto;
 }
@@ -40,8 +40,8 @@ img {
 }
 
 .da-page-section-img {
-  margin-right: 20px;
   width: 300px;
+  margin: 20px;
 }
 
 .da-page-section.inverted {
@@ -51,9 +51,32 @@ img {
 .d-block {
   display: block;
 }
+.d-inline {
+  display: inline;
+}
+.d-radius-6 {
+  border-radius: 12px;
+}
+
 .da-page-section-text-block-inverted {
   padding-right: 20px;
 }
+
+.da-page-section-partners {
+  margin: 0em -2em;
+  padding-left: 2em;
+  padding-right: 2em;
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+.da-page-section-partners-img > img {
+  margin: 1em;
+  background: #fff;
+  border-radius: 5px;
+  padding: 15px;
+  box-shadow: 0px 0px 10px 0px #f9f9f9;
+}
+
 @media screen and (max-width: 768px) {
   body,
   header,
