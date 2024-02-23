@@ -1,0 +1,85 @@
+body {
+  background-color: #eee;
+}
+body * {
+  font-family: -apple-system, Helvetica Neue, sans-serif;
+  margin: 1em 0em;
+}
+p {
+  line-height: 1.5em;
+}
+img {
+  max-width: 100%;
+}
+
+.da-page-header,
+.da-page-main {
+  width: 740px;
+  background-color: #fff;
+  padding: 20px;
+  overflow: hidden;
+  margin: auto;
+}
+
+.da-page-text-head-line-1 {
+  font-size: 38px;
+  display: block;
+}
+
+.da-page-text-head-line-2 {
+  font-size: 28px;
+  display: block;
+}
+
+.da-page-text-big {
+  font-size: 19px;
+}
+
+.da-page-section {
+  display: flex;
+}
+
+.da-page-section-img {
+  margin-right: 20px;
+  width: 300px;
+}
+
+.da-page-section.inverted {
+  flex-direction: row-reverse;
+}
+
+.d-block {
+  display: block;
+}
+.da-page-section-text-block-inverted {
+  padding-right: 20px;
+}
+@media screen and (max-width: 768px) {
+  body,
+  header,
+  main,
+  footer {
+    margin: 0;
+  }
+  p {
+    font-size: 1.7em;
+  }
+
+  small {
+    font-size: 1.4em;
+  }
+  .da-page-text-big {
+    font-size: 2em;
+  }
+
+  .da-page-section-img {
+    width: 100%;
+  }
+  .da-page-section,
+  .da-page-section.inverted {
+    flex-direction: column;
+  }
+  .da-page-section-text-block-inverted {
+    padding-right: 0px;
+  }
+}
