@@ -1,3 +1,5 @@
+import { Patients } from './definitions';
+
 export const formatCurrency = (amount: number) => {
   return (amount / 100).toLocaleString('en-US', {
     style: 'currency',
@@ -50,4 +52,19 @@ export const generatePagination = (currentPage: number, totalPages: number) => {
     '...',
     totalPages,
   ];
+};
+
+export const getPatientsFormatted = (patients: Patients[]) => {
+  return patients.map((patient) => {
+    return {
+      ...patient,
+      name: `${patient.firstName} ${patient.lastName}`,
+      image_url: 'http://localhost:3000/logo.svg',
+      isVaccinated: patient.isVaccinated ? 'Yes' : 'No',
+      birthDate: formatDateToLocal(patient.birthDate),
+      vaccinationDate: patient.vaccinationDate
+        ? formatDateToLocal(patient.vaccinationDate)
+        : '',
+    };
+  });
 };

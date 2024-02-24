@@ -1,10 +1,13 @@
-import { sql } from '@vercel/postgres';
 import { Patients } from './definitions';
+import { getPatientsFormatted } from './utils';
 
-export async function getUser(email: string) {
+
+const API_BASE_URL = 'http://localhost:5000/';
+export async function getPatients(): Promise<Patients[]> {
   try {
-    const user = await sql`SELECT * FROM users WHERE email=${email}`;
-    return user.rows[0] as Patients;
+    const response = await fetch(`${API_BASE_URL}patients`);
+    const patients = await response.json();
+    return getPatientsFormatted(patients);
   } catch (error) {
     console.error('Failed to fetch user:', error);
     throw new Error('Failed to fetch user.');

@@ -1,23 +1,8 @@
 'use client';
-import {
-  DocumentDuplicateIcon,
-  HomeIcon,
-  UserGroupIcon,
-} from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
-// Map of links to display in the side navigation.
-// Depending on the size of the application, this would be stored in a database.
-const links = [
-  { name: 'Home', href: '/dashboard', icon: HomeIcon },
-  {
-    name: 'Invoices',
-    href: '/dashboard/invoices',
-    icon: DocumentDuplicateIcon,
-  },
-  { name: 'Customers', href: '/dashboard/customers', icon: UserGroupIcon },
-];
+import { links } from '@/app/lib/dashboardManuLink';
+import type { MenuLinks } from '@/app/lib/definitions';
 
 function activeLink(name: string, pathname: string) {
   const style =
@@ -30,9 +15,10 @@ function activeLink(name: string, pathname: string) {
 
 export default function NavLinks() {
   const pathname = usePathname();
+  const menu = links();
   return (
     <>
-      {links.map((link) => {
+      {menu.map((link: MenuLinks) => {
         const LinkIcon = link.icon;
         return (
           <Link

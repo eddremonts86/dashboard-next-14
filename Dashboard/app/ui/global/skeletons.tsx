@@ -5,7 +5,7 @@ const shimmer =
 export function CardSkeleton() {
   return (
     <div
-      className={`${shimmer} relative overflow-hidden rounded-xl bg-gray-100 p-2 shadow-sm`}
+      className={`${shimmer} relative my-4 overflow-hidden rounded-xl bg-gray-100 p-2 shadow-sm`}
     >
       <div className="flex p-4">
         <div className="h-5 w-5 rounded-md bg-gray-200" />
@@ -180,16 +180,16 @@ export function InvoicesTableSkeleton() {
             <thead className="rounded-lg text-left text-sm font-normal">
               <tr>
                 <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
-                  Customer
+                  Full name
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  Email
+                  Age
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  Amount
+                  Sex
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  Date
+                  Date for vaccination
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   Status

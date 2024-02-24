@@ -3,8 +3,16 @@ export type Patients = {
   id: string;
   firstName: string;
   lastName: string;
-  birthDate: Date;
+  name: string;
+  birthDate: string;
   sex: 'male' | 'female';
-  isVaccinated: Boolean;
-  vaccinationDate: Date | null;
+  isVaccinated: string;
+  vaccinationDate: string | null;
+  image_url: string;
+};
+
+export type MenuLinks = {
+  name: string;
+  href: string;
+  icon: any;
 };

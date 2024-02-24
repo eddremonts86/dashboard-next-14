@@ -1,3 +1,16 @@
+import {
+  InvoicesTableSkeleton,
+  CardsSkeleton,
+} from '@/app/ui/global/skeletons';
+import { Suspense } from 'react';
+import { Overview } from '@/app/dashboard/overview';
 export default function Page() {
-  return <div className="flex min-h-screen flex-col p-6">Dasboard</div>;
+  return (
+    <>
+      <Suspense fallback={<InvoicesTableSkeleton />}>
+        <Overview />
+      </Suspense>
+      <CardsSkeleton />
+    </>
+  );
 }
