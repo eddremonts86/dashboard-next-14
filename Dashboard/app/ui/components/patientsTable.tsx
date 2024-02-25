@@ -1,6 +1,6 @@
-import { Patients } from '@/app/lib/definitions';
-import Search from '@/app/ui/components/search';
+import type { Patients } from '@/app/lib/definitions';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default async function PatientsTable({
   patients,
@@ -9,8 +9,6 @@ export default async function PatientsTable({
 }) {
   return (
     <div className="w-full">
-      <h1 className="mb-8 text-xl md:text-2xl">Patients</h1>
-      <Search placeholder="Search patients..." />
       <div className="mt-6 flow-root">
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full align-middle">
@@ -54,52 +52,65 @@ export default async function PatientsTable({
                   </div>
                 ))}
               </div>
-              <table className="hidden min-w-full rounded-md text-gray-900 md:table">
+              <table className="hidden min-w-full overflow-y-auto rounded-md text-gray-900 md:table">
                 <thead className="rounded-md bg-gray-50 text-left text-sm font-normal">
                   <tr>
                     <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
                       Name
                     </th>
-                    <th scope="col" className="px-3 py-5 font-medium">
+                    <th
+                      scope="col"
+                      className="px-3 py-5 text-center font-medium"
+                    >
                       Sex
                     </th>
                     <th scope="col" className="px-3 py-5 font-medium">
-                      BirthDate/Age
+                      Birth Date/Age
                     </th>
                     <th scope="col" className="px-3 py-5 font-medium">
-                      Vaccination date
+                      Vaccination
                     </th>
-                    <th scope="col" className="px-4 py-5 font-medium">
-                      Is vaccinated
+                    <th
+                      scope="col"
+                      className="px-4 py-5 text-center font-medium"
+                    >
+                      Vaccinated
                     </th>
-                    <th scope="col" className="px-4 py-5 font-medium">
-                      Actions
+                    <th
+                      scope="col"
+                      className="px-4 py-5 text-center font-medium"
+                    >
+                      Status
                     </th>
                   </tr>
                 </thead>
-
-                <tbody className="divide-y divide-gray-200 text-gray-900">
+                <tbody
+                  className="divide-y divide-gray-200 overflow-auto text-gray-900"
+                  style={{ height: '40vh' }}
+                >
                   {patients.map((patient) => (
                     <tr key={patient.id} className="group">
                       <td className="whitespace-nowrap bg-white py-5 pl-4 pr-3 text-sm text-black group-first-of-type:rounded-md group-last-of-type:rounded-md sm:pl-6">
                         <div className="flex items-center gap-3">
-                          <Image
-                            src={patient.image_url}
-                            className="rounded-full"
-                            alt={`${patient.name}'s profile picture`}
-                            width={28}
-                            height={28}
-                          />
-                          <p>{patient.name}</p>
+                          <Link key={patient.name} href={patient.href}>
+                            <Image
+                              src={patient.image_url}
+                              className="mr-2 inline-flex rounded-full"
+                              alt={`${patient.name}'s profile picture`}
+                              width={28}
+                              height={28}
+                            />
+                            <span>{patient.name}</span>
+                          </Link>
                         </div>
                       </td>
-                      <td className="whitespace-nowrap bg-white px-4 py-5 text-sm">
+                      <td className="whitespace-nowrap bg-white px-4 py-5 text-center text-sm">
                         {patient.sex}
                       </td>
 
                       <td className="whitespace-nowrap bg-white px-4 py-5 text-sm">
                         <span className="block">
-                          BirthDate: {patient.birthDate}
+                          Birth date: {patient.birthDate}
                         </span>
                         <span className="block">Age: {patient.age}</span>
                         <span className="block">
@@ -108,15 +119,25 @@ export default async function PatientsTable({
                       </td>
                       <td className="whitespace-nowrap bg-white px-4 py-5 text-sm">
                         <span className="block">{patient.vaccinationDate}</span>
-                        {patient.vaccinatedAtAge !== null && <span className="block">
-                          At age of: {patient.vaccinatedAtAge} years
-                        </span>}
+                        {patient.vaccinatedAtAge !== null && (
+                          <span className="block">
+                            At age of: {patient.vaccinatedAtAge} years
+                          </span>
+                        )}
+                        {patient.vaccinatedAtAge === null &&
+                          patient.inRange && (
+                            <Link key={patient.name} href={patient.href_vaccination}>
+                              Create an appointment
+                            </Link>
+                          )}
                       </td>
-                      <td className="whitespace-nowrap bg-white px-4 py-5 text-sm group-first-of-type:rounded-md group-last-of-type:rounded-md">
+                      <td className="whitespace-nowrap bg-white px-4 py-5 text-center text-sm group-first-of-type:rounded-md group-last-of-type:rounded-md">
                         {patient.isVaccinated}
                       </td>
-                      <td className="whitespace-nowrap bg-white px-4 py-5 text-sm group-first-of-type:rounded-md group-last-of-type:rounded-md">
-                        {patient.vaccinatedStatus}
+                      <td className="whitespace-nowrap bg-white px-4 py-5 text-center text-sm group-first-of-type:rounded-md group-last-of-type:rounded-md ">
+                        <span
+                          className={`${patient.vaccinatedStatus} whitespace-nowrap rounded-lg ps-4 `}
+                        ></span>
                       </td>
                     </tr>
                   ))}

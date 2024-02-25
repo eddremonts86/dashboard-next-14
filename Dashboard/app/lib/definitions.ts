@@ -1,22 +1,33 @@
 // Definition of types used in the app
-export type Patients = {
-  id: string;
+export interface Patient {
   firstName: string;
   lastName: string;
-  name: string;
   birthDate: string;
-  sex: 'male' | 'female';
-  isVaccinated: string;
+  sex: string;
+  isVaccinated: boolean;
   vaccinationDate: string | null;
-  image_url: string;
+}
+export interface Patients extends Omit<Patient, 'isVaccinated'> {
+  id: string;
+  name: string;
   age: number;
   vaccinatedStatus: string;
   inRange: boolean;
-  vaccinatedAtAge: number;
-};
+  vaccinatedAtAge: number | null;
+  href: string;
+  image_url: string;
+  href_vaccination: string;
+  isVaccinated: string;
+}
 
-export type MenuLinks = {
+export interface PatientsResult {
+  pages: number;
+  total: number;
+  data: Patients[];
+}
+
+export interface MenuLinks {
   name: string;
   href: string;
   icon: any;
-};
+}

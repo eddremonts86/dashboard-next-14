@@ -1,16 +1,12 @@
-import { Patients } from './definitions';
+import type { Patient, Patients } from './definitions';
+
 const MAX_AGE = 16;
+
 const MIN_AGE_MALE = 11;
 const MAX_AGE_MALE = 13;
+
 const MIN_AGE_FEMALE = 7;
 const MAX_AGE_FEMALE = 9;
-
-export const formatCurrency = (amount: number) => {
-  return (amount / 100).toLocaleString('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  });
-};
 
 export const formatDateToLocal = (
   dateStr: string,
@@ -24,39 +20,6 @@ export const formatDateToLocal = (
   };
   const formatter = new Intl.DateTimeFormat(locale, options);
   return formatter.format(date);
-};
-
-export const generatePagination = (currentPage: number, totalPages: number) => {
-  // If the total number of pages is 7 or less,
-  // display all pages without any ellipsis.
-  if (totalPages <= 7) {
-    return Array.from({ length: totalPages }, (_, i) => i + 1);
-  }
-
-  // If the current page is among the first 3 pages,
-  // show the first 3, an ellipsis, and the last 2 pages.
-  if (currentPage <= 3) {
-    return [1, 2, 3, '...', totalPages - 1, totalPages];
-  }
-
-  // If the current page is among the last 3 pages,
-  // show the first 2, an ellipsis, and the last 3 pages.
-  if (currentPage >= totalPages - 2) {
-    return [1, 2, '...', totalPages - 2, totalPages - 1, totalPages];
-  }
-
-  // If the current page is somewhere in the middle,
-  // show the first page, an ellipsis, the current page and its neighbors,
-  // another ellipsis, and the last page.
-  return [
-    1,
-    '...',
-    currentPage - 1,
-    currentPage,
-    currentPage + 1,
-    '...',
-    totalPages,
-  ];
 };
 
 const getAge = (date: string) => {
@@ -73,13 +36,13 @@ const getStatus = (date: string, max: number) => {
   return age <= max;
 };
 
-function addYears(date: string, years: number) {
+const addYears = (date: string, years: number) => {
   let result = new Date(date);
   result.setFullYear(result.getFullYear() + years);
   return result;
-}
+};
 
-const getOverdueVaccinationDate = (patient: any) => {
+const getOverdueVaccinationDate = (patient: Patient) => {
   const { vaccinationDate, birthDate, sex } = patient;
   if (!vaccinationDate) return false;
   let vaccination = new Date(vaccinationDate);
@@ -91,72 +54,95 @@ const getOverdueVaccinationDate = (patient: any) => {
   return vaccination >= birth && vaccination <= start;
 };
 
-const getVaccinatedStatus = (patient: any) => {
-  const { sex, isVaccinated, birthDate } = patient;
+const inRage = (patient: Patient) => {
+  const { sex, birthDate } = patient;
+  return sex === 'male'
+    ? isDateInRange(MIN_AGE_MALE, MAX_AGE_MALE, birthDate)
+    : isDateInRange(MIN_AGE_FEMALE, MAX_AGE_FEMALE, birthDate);
+};
+
+const underRage = (patient: Patient) => {
+  const { sex, birthDate } = patient;
+  const age = getAge(birthDate);
+  return sex === 'male' ? MIN_AGE_MALE > age : MIN_AGE_FEMALE > age;
+};
+
+const getVaccinatedStatus = (patient: Patient) => {
+  const { sex, isVaccinated, birthDate, vaccinationDate } = patient;
   if (isVaccinated) {
-    return 'blue';
+    return 'bg-blue-400';
   }
   const validDate = getOverdueVaccinationDate(patient);
+  const underAge = underRage(patient);
+
+  if (underAge) {
+    return 'bg-green-400';
+  }
+
+  if (!isVaccinated && vaccinationDate) {
+    return 'bg-orange-400';
+  }
 
   if (sex === 'male') {
     return isDateInRange(MIN_AGE_MALE, MAX_AGE_MALE, birthDate)
-      ? 'Yellow'
+      ? 'bg-yellow-400'
       : !validDate
-      ? 'red'
+      ? 'bg-red-400'
       : '';
   } else {
     return isDateInRange(MIN_AGE_FEMALE, MAX_AGE_FEMALE, birthDate)
-      ? 'Yellow'
+      ? 'bg-yellow-400'
       : !validDate
-      ? 'red'
+      ? 'bg-red-400'
       : '';
   }
 };
 
-const vaccinatedAtAge = (vaccinationDate: string , birthDate: string) => {
+const vaccinatedAtAge = (vaccinationDate: string, birthDate: string) => {
   return (
     new Date(vaccinationDate).getFullYear() - new Date(birthDate).getFullYear()
   );
 };
 
-export const getPatientsFormatted = (
-  patients: any,
-  itemPerPage = 50,
-): Patients[] => {
-  return patients
-    .filter((patient: any) => getStatus(patient.birthDate, MAX_AGE))
-    .map((patient: any) => {
-      const {
-        birthDate,
-        firstName,
-        lastName,
-        isVaccinated,
-        vaccinationDate,
-        sex,
-      } = patient;
-      return {
-        ...patient,
-        id: `${firstName}-${lastName}-${birthDate}`,
-        name: `${firstName} ${lastName}`,
-        image_url: getRandomImage(sex),
-        isVaccinated: isVaccinated ? 'Yes' : 'No',
-        birthDate: formatDateToLocal(birthDate),
-        vaccinationDate: vaccinationDate
-          ? formatDateToLocal(vaccinationDate)
-          : '',
-        sex: sex === 'male' ? 'Male' : 'Female',
-        age: getAge(birthDate),
-        vaccinatedStatus: getVaccinatedStatus(patient),
-        vaccinatedAtAge: isVaccinated
+export const getValidPatients = (patients: Patient[]) => {
+  return patients.filter((patient: Patient) =>
+    getStatus(patient.birthDate, MAX_AGE),
+  );
+};
+
+export const getPatientsFormatted = (patients: Patient[]): Patients[] => {
+  return patients.map((patient: Patient) => {
+    const {
+      birthDate,
+      firstName,
+      lastName,
+      isVaccinated,
+      vaccinationDate,
+      sex,
+    } = patient;
+    const id = `${firstName}_${lastName}_${birthDate}`;
+    return {
+      ...patient,
+      id,
+      name: `${firstName} ${lastName}`,
+      age: getAge(birthDate),
+      vaccinatedStatus: getVaccinatedStatus(patient),
+      image_url: getRandomImage(sex),
+      inRange: inRage(patient),
+      href: `dashboard/patient/?${id}`,
+      href_vaccination: `dashboard/schedule/?${id}`,
+      isVaccinated: isVaccinated ? 'Yes' : 'No',
+      birthDate: formatDateToLocal(birthDate),
+      sex: sex === 'male' ? 'Male' : 'Female',
+      vaccinationDate: vaccinationDate
+        ? formatDateToLocal(vaccinationDate)
+        : '',
+      vaccinatedAtAge:
+        isVaccinated && vaccinationDate
           ? vaccinatedAtAge(vaccinationDate, birthDate)
           : null,
-        inRange:
-          sex === 'male'
-            ? isDateInRange(MIN_AGE_MALE, MAX_AGE_MALE, birthDate)
-            : isDateInRange(MIN_AGE_FEMALE, MAX_AGE_FEMALE, birthDate),
-      };
-    })
-    .slice(0, itemPerPage);
+    };
+  });
 };
 
 export const getRandomImage = (sex: string) => {
@@ -168,4 +154,12 @@ export const getRandomImage = (sex: string) => {
   } else {
     return `/patients/${female[randomNumber]}`;
   }
+};
+
+export const paginateArray = (inputArray: Patient[], subArraySize: number) => {
+  let result = [];
+  for (let i = 0; i < inputArray.length; i += subArraySize) {
+    result.push(inputArray.slice(i, i + subArraySize));
+  }
+  return result;
 };
