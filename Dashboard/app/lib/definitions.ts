@@ -9,6 +9,10 @@ export type Patients = {
   isVaccinated: string;
   vaccinationDate: string | null;
   image_url: string;
+  age: number;
+  vaccinatedStatus: string;
+  inRange: boolean;
+  vaccinatedAtAge: number;
 };
 
 export type MenuLinks = {

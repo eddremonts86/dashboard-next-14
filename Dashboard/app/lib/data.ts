@@ -1,6 +1,6 @@
+import { patients as basePatients } from './base-data';
 import { Patients } from './definitions';
 import { getPatientsFormatted } from './utils';
-
 
 const API_BASE_URL = 'http://localhost:5000/';
 export async function getPatients(): Promise<Patients[]> {
@@ -10,6 +10,6 @@ export async function getPatients(): Promise<Patients[]> {
     return getPatientsFormatted(patients);
   } catch (error) {
     console.error('Failed to fetch user:', error);
-    throw new Error('Failed to fetch user.');
+    return getPatientsFormatted(basePatients);
   }
 }

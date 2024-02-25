@@ -1,6 +1,6 @@
-import Image from 'next/image';
-import Search from '@/app/ui/components/search';
 import { Patients } from '@/app/lib/definitions';
+import Search from '@/app/ui/components/search';
+import Image from 'next/image';
 
 export default async function PatientsTable({
   patients,
@@ -9,9 +9,7 @@ export default async function PatientsTable({
 }) {
   return (
     <div className="w-full">
-      <h1 className="mb-8 text-xl md:text-2xl">
-        Patients
-      </h1>
+      <h1 className="mb-8 text-xl md:text-2xl">Patients</h1>
       <Search placeholder="Search patients..." />
       <div className="mt-6 flow-root">
         <div className="overflow-x-auto">
@@ -47,7 +45,7 @@ export default async function PatientsTable({
                       </div>
                       <div className="flex w-1/2 flex-col">
                         <p className="text-xs">Paid</p>
-                        <p className="font-medium">{patient.isVaccinated }</p>
+                        <p className="font-medium">{patient.isVaccinated}</p>
                       </div>
                     </div>
                     <div className="pt-4 text-sm">
@@ -63,16 +61,19 @@ export default async function PatientsTable({
                       Name
                     </th>
                     <th scope="col" className="px-3 py-5 font-medium">
-                      sex
+                      Sex
                     </th>
                     <th scope="col" className="px-3 py-5 font-medium">
-                      Total Invoices
+                      BirthDate/Age
                     </th>
                     <th scope="col" className="px-3 py-5 font-medium">
-                      Total Pending
+                      Vaccination date
                     </th>
                     <th scope="col" className="px-4 py-5 font-medium">
-                      Total Paid
+                      Is vaccinated
+                    </th>
+                    <th scope="col" className="px-4 py-5 font-medium">
+                      Actions
                     </th>
                   </tr>
                 </thead>
@@ -95,14 +96,27 @@ export default async function PatientsTable({
                       <td className="whitespace-nowrap bg-white px-4 py-5 text-sm">
                         {patient.sex}
                       </td>
+
                       <td className="whitespace-nowrap bg-white px-4 py-5 text-sm">
-                        {patient.vaccinationDate}
+                        <span className="block">
+                          BirthDate: {patient.birthDate}
+                        </span>
+                        <span className="block">Age: {patient.age}</span>
+                        <span className="block">
+                          In age range: {patient.inRange ? 'Yes' : 'No'}
+                        </span>
                       </td>
                       <td className="whitespace-nowrap bg-white px-4 py-5 text-sm">
-                        {patient.birthDate}
+                        <span className="block">{patient.vaccinationDate}</span>
+                        {patient.vaccinatedAtAge !== null && <span className="block">
+                          At age of: {patient.vaccinatedAtAge} years
+                        </span>}
                       </td>
                       <td className="whitespace-nowrap bg-white px-4 py-5 text-sm group-first-of-type:rounded-md group-last-of-type:rounded-md">
                         {patient.isVaccinated}
+                      </td>
+                      <td className="whitespace-nowrap bg-white px-4 py-5 text-sm group-first-of-type:rounded-md group-last-of-type:rounded-md">
+                        {patient.vaccinatedStatus}
                       </td>
                     </tr>
                   ))}
