@@ -42,6 +42,10 @@ const addYears = (date: string, years: number) => {
   return result;
 };
 
+export const getTime = (date: string) =>{
+  return new Date(date).getTime().toString();
+}
+
 const getOverdueVaccinationDate = (patient: Patient) => {
   const { vaccinationDate, birthDate, sex } = patient;
   if (!vaccinationDate) return false;
@@ -70,7 +74,7 @@ const underRage = (patient: Patient) => {
 const getVaccinatedStatus = (patient: Patient) => {
   const { sex, isVaccinated, birthDate, vaccinationDate } = patient;
 
-  if (isVaccinated && vaccinationDate) {
+  if (!isVaccinated && vaccinationDate) {
     return 'bg-orange-400';
   }
 
@@ -78,12 +82,11 @@ const getVaccinatedStatus = (patient: Patient) => {
     return 'bg-blue-400';
   }
 
-  const validDate = getOverdueVaccinationDate(patient);
-  const underAge = underRage(patient);
-  if (underAge) {
+  if (underRage(patient)) {
     return 'bg-green-400';
   }
 
+  const validDate = getOverdueVaccinationDate(patient);
   if (sex === 'male') {
     return isDateInRange(MIN_AGE_MALE, MAX_AGE_MALE, birthDate)
       ? 'bg-yellow-400'
@@ -112,7 +115,7 @@ export const getValidPatients = (patients: Patient[]) => {
 };
 
 export const getPatientsFormatted = (patients: Patient[]): Patients[] => {
-  return patients.map((patient: Patient) => {
+  const patientsList = patients.map((patient: Patient) => {
     const {
       birthDate,
       firstName,
@@ -121,7 +124,7 @@ export const getPatientsFormatted = (patients: Patient[]): Patients[] => {
       vaccinationDate,
       sex,
     } = patient;
-    const id = `${firstName}_${lastName}_${birthDate}`;
+    const id = `${firstName}_${lastName}_${getTime(birthDate)}`;
     const localPatient = getLocalPatients('patients', id);
     if (localPatient) {
       return {
@@ -161,6 +164,21 @@ export const getPatientsFormatted = (patients: Patient[]): Patients[] => {
           : null,
     };
   });
+  return sortPatientsList(patientsList);
+};
+
+const sortPatientsList = (list: Patients[]) => {
+  return list.sort((a: Patients, b: Patients) => {
+    const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+    const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
+    return 0;
+  });
 };
 
 export const getRandomImage = (sex: string) => {
@@ -183,36 +201,42 @@ export const paginateArray = (inputArray: Patient[], subArraySize: number) => {
 };
 
 const getLocalPatients = (key: string, id: string) => {
-  const localPatients = localStorage.getItem(key);
-  if (localPatients) {
-    const patients = JSON.parse(localPatients);
-    const updatedPatients = patients?.find(
-      (patient: Patients) => patient.id === id,
-    );
-    return updatedPatients || null;
+  try {
+    const localPatients = localStorage.getItem(key);
+    if (localPatients) {
+      const patients = JSON.parse(localPatients);
+      const updatedPatients = patients?.find(
+        (patient: Patients) => patient.id === id,
+      );
+      return updatedPatients || null;
+    }
+    return null;
+  } catch (error) {
+    return null;
   }
-  return null;
 };
 
 export const updateLocalStorage = (key: string, value: Patients) => {
-  const localPatients = localStorage.getItem(key);
-  const isInLocalStore = getLocalPatients(key, value.id);
-  if (localPatients && isInLocalStore) {
-    const patients = JSON.parse(localPatients);
-    const updatedPatients = patients.map((patient: Patients) => {
-      if (patient.id === value.id) {
-        return value;
-      }
-      return patient;
-    });
-    localStorage.setItem(key, JSON.stringify(updatedPatients));
-    return;
-  }
-  if (localPatients && !isInLocalStore) {
-    const patients = JSON.parse(localPatients);
-    patients.push(value);
-    localStorage.setItem(key, JSON.stringify(patients));
-    return;
-  }
-  localStorage.setItem(key, JSON.stringify([value]));
+  try {
+    const localPatients = localStorage.getItem(key);
+    const isInLocalStore = getLocalPatients(key, value.id);
+    if (localPatients && isInLocalStore) {
+      const patients = JSON.parse(localPatients);
+      const updatedPatients = patients.map((patient: Patients) => {
+        if (patient.id === value.id) {
+          return value;
+        }
+        return patient;
+      });
+      localStorage.setItem(key, JSON.stringify(updatedPatients));
+      return;
+    }
+    if (localPatients && !isInLocalStore) {
+      const patients = JSON.parse(localPatients);
+      patients.push(value);
+      localStorage.setItem(key, JSON.stringify(patients));
+      return;
+    }
+    localStorage.setItem(key, JSON.stringify([value]));
+  } catch (error) {}
 };

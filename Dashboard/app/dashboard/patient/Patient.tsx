@@ -1,16 +1,22 @@
 'use client';
 import { getPatient } from '@/app/lib/data';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 export function Patient() {
   const router = useSearchParams();
   const patient = getPatient(router.toString());
   console.log(patient);
   const appointmentButton =
+    patient.vaccinatedStatus !== 'bg-blue-400' &&
+    patient.vaccinatedStatus !== 'bg-red-400';
+
+  const btnText =
     patient.vaccinatedStatus === 'bg-green-400' ||
-    patient.vaccinatedStatus === 'bg-yellow-400';
+    patient.vaccinatedStatus === 'bg-yellow-400'
+      ? ' Create an appointment'
+      : ' Update vaccination info';
 
   return (
     <section className="flex flex-grow  flex-row rounded-xl bg-gray-50 px-8 py-8 md:px-16 md:py-16">
@@ -46,14 +52,16 @@ export function Patient() {
           <b className="pr-1">Vaccination date:</b>{' '}
           {patient.vaccinationDate || 'N/A'}
         </p>
+
+        <p>
+          <b className="pr-1">Vaccinated at age:</b>{' '}
+          {patient.vaccinatedAtAge || 'N/A'}
+        </p>
         <p>
           <b className="pr-1">Vaccinated Status:</b>
           <span
             className={`${patient.vaccinatedStatus} whitespace-nowrap rounded-lg ps-5 `}
           ></span>
-        </p>
-        <p>
-          <b className="pr-1">Vaccinated at age:</b> {patient.vaccinatedAtAge}
         </p>
         <p>
           <b className="pr-1">Is vaccinated:</b> {patient.isVaccinated}
@@ -67,7 +75,7 @@ export function Patient() {
         <div className="w-128 md:w-160 flex flex-col items-center justify-center px-5">
           <Link key={patient.name} href={patient.href_vaccination}>
             <button className="h-12 w-48 rounded-md bg-blue-600 text-white">
-              Create an appointment
+              {btnText}
             </button>
           </Link>
         </div>
