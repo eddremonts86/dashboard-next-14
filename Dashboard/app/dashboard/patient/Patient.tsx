@@ -7,7 +7,6 @@ import { useSearchParams } from 'next/navigation';
 export function Patient() {
   const router = useSearchParams();
   const patient = getPatient(router.toString());
-  console.log(patient);
   const appointmentButton =
     patient.vaccinatedStatus !== 'bg-blue-400' &&
     patient.vaccinatedStatus !== 'bg-red-400';
