@@ -6,12 +6,12 @@ import { getPatients } from '@/app/lib/data';
 import type { PatientsResult } from '@/app/lib/definitions';
 import PatientsTable from '@/app/ui/components/patientsTable';
 
-export async function Overview() {
+export function Overview() {
   const [page, setPage] = useState(0);
   const handlePageChange = (newPage: number) => {
     setPage(newPage - 1);
   };
-  const patients: PatientsResult = await getPatients({ page });
+  const patients: PatientsResult = getPatients({ page });
   const { pages, total, data } = patients;
   return (
     <>

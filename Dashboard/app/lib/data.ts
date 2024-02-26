@@ -1,12 +1,11 @@
 import { patients as basePatients } from './base-data';
-import type { Patient } from './definitions';
-import { PatientsResult } from './definitions';
+import type { Patient, Patients, PatientsResult } from './definitions';
 import { getPatientsFormatted, getValidPatients, paginateArray } from './utils';
 
-export async function getPatients({
+export   function getPatients({
   itemByPage = 7,
   page = 0,
-}): Promise<PatientsResult> {
+}): PatientsResult {
   /*try {
     const API_BASE_URL = 'http://localhost:5000/';
     let allPatients = basePatients;
@@ -15,7 +14,6 @@ export async function getPatients({
   } catch (error) {
     console.error('Failed to fetch user:', error);
   }*/
-  
 
   const patients: Patient[] = getValidPatients(basePatients);
   const patientsPaginated = paginateArray(patients, itemByPage);
@@ -24,4 +22,21 @@ export async function getPatients({
     total: patients.length,
     data: getPatientsFormatted(patientsPaginated[page]),
   };
+}
+
+export function getPatient(id: string): Patients {
+  const searchParams = id.split('_');
+
+  let patient = basePatients?.find((patient) => {
+    return (
+      patient.firstName === searchParams[0] &&
+      patient.lastName === searchParams[1]
+    );
+  });
+
+  let data: Patients = {} as Patients;
+  if (patient) {
+    data = getPatientsFormatted([patient])[0];
+  }
+  return data;
 }

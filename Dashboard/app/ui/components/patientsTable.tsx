@@ -118,7 +118,9 @@ export default async function PatientsTable({
                         </span>
                       </td>
                       <td className="whitespace-nowrap bg-white px-4 py-5 text-sm">
-                        <span className="block">{patient.vaccinationDate}</span>
+                        <span className="block">
+                          {patient.vaccinationDate || 'N/A'}
+                        </span>
                         {patient.vaccinatedAtAge !== null && (
                           <span className="block">
                             At age of: {patient.vaccinatedAtAge} years
@@ -126,8 +128,13 @@ export default async function PatientsTable({
                         )}
                         {patient.vaccinatedAtAge === null &&
                           patient.inRange && (
-                            <Link key={patient.name} href={patient.href_vaccination}>
-                              Create an appointment
+                            <Link
+                              key={patient.name}
+                              href={patient.href_vaccination}
+                            >
+                              <button className="h-7 w-40 rounded-md bg-blue-600 text-sm text-white">
+                                Create an appointment
+                              </button>
                             </Link>
                           )}
                       </td>

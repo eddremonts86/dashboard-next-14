@@ -1,4 +1,4 @@
-import { Overview } from '@/app/dashboard/overview';
+ import { Overview } from '@/app/dashboard/overview';
 import {
   InvoiceSkeleton,
   InvoicesTableSkeleton,

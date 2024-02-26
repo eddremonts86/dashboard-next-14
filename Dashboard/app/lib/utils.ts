@@ -69,18 +69,19 @@ const underRage = (patient: Patient) => {
 
 const getVaccinatedStatus = (patient: Patient) => {
   const { sex, isVaccinated, birthDate, vaccinationDate } = patient;
+
+  if (isVaccinated && vaccinationDate) {
+    return 'bg-orange-400';
+  }
+
   if (isVaccinated) {
     return 'bg-blue-400';
   }
+
   const validDate = getOverdueVaccinationDate(patient);
   const underAge = underRage(patient);
-
   if (underAge) {
     return 'bg-green-400';
-  }
-
-  if (!isVaccinated && vaccinationDate) {
-    return 'bg-orange-400';
   }
 
   if (sex === 'male') {
@@ -88,13 +89,13 @@ const getVaccinatedStatus = (patient: Patient) => {
       ? 'bg-yellow-400'
       : !validDate
       ? 'bg-red-400'
-      : '';
+      : 'bg-orange-400';
   } else {
     return isDateInRange(MIN_AGE_FEMALE, MAX_AGE_FEMALE, birthDate)
       ? 'bg-yellow-400'
       : !validDate
       ? 'bg-red-400'
-      : '';
+      : 'bg-orange-400';
   }
 };
 
@@ -121,6 +122,23 @@ export const getPatientsFormatted = (patients: Patient[]): Patients[] => {
       sex,
     } = patient;
     const id = `${firstName}_${lastName}_${birthDate}`;
+    const localPatient = getLocalPatients('patients', id);
+    if (localPatient) {
+      return {
+        ...localPatient,
+        vaccinationDate: localPatient.vaccinationDate
+          ? formatDateToLocal(localPatient.vaccinationDate)
+          : '',
+        vaccinatedAtAge:
+          localPatient.isVaccinated && localPatient.vaccinationDate
+            ? vaccinatedAtAge(localPatient.vaccinationDate, birthDate)
+            : null,
+        vaccinatedStatus: getVaccinatedStatus({
+          ...localPatient,
+          isVaccinated: localPatient.isVaccinated === 'Yes' ? true : false,
+        }),
+      };
+    }
     return {
       ...patient,
       id,
@@ -129,8 +147,8 @@ export const getPatientsFormatted = (patients: Patient[]): Patients[] => {
       vaccinatedStatus: getVaccinatedStatus(patient),
       image_url: getRandomImage(sex),
       inRange: inRage(patient),
-      href: `dashboard/patient/?${id}`,
-      href_vaccination: `dashboard/schedule/?${id}`,
+      href: `/dashboard/patient/?${id}`,
+      href_vaccination: `/dashboard/schedule/?${id}`,
       isVaccinated: isVaccinated ? 'Yes' : 'No',
       birthDate: formatDateToLocal(birthDate),
       sex: sex === 'male' ? 'Male' : 'Female',
@@ -162,4 +180,39 @@ export const paginateArray = (inputArray: Patient[], subArraySize: number) => {
     result.push(inputArray.slice(i, i + subArraySize));
   }
   return result;
+};
+
+const getLocalPatients = (key: string, id: string) => {
+  const localPatients = localStorage.getItem(key);
+  if (localPatients) {
+    const patients = JSON.parse(localPatients);
+    const updatedPatients = patients?.find(
+      (patient: Patients) => patient.id === id,
+    );
+    return updatedPatients || null;
+  }
+  return null;
+};
+
+export const updateLocalStorage = (key: string, value: Patients) => {
+  const localPatients = localStorage.getItem(key);
+  const isInLocalStore = getLocalPatients(key, value.id);
+  if (localPatients && isInLocalStore) {
+    const patients = JSON.parse(localPatients);
+    const updatedPatients = patients.map((patient: Patients) => {
+      if (patient.id === value.id) {
+        return value;
+      }
+      return patient;
+    });
+    localStorage.setItem(key, JSON.stringify(updatedPatients));
+    return;
+  }
+  if (localPatients && !isInLocalStore) {
+    const patients = JSON.parse(localPatients);
+    patients.push(value);
+    localStorage.setItem(key, JSON.stringify(patients));
+    return;
+  }
+  localStorage.setItem(key, JSON.stringify([value]));
 };
