@@ -26,6 +26,7 @@ export function getPatients({ itemByPage = 7, page = 0 }): PatientsResult {
     };
   } catch (error) {
     console.error(error);
+    return {} as PatientsResult;
   }
 }
 
